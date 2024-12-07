@@ -1,9 +1,11 @@
 package com.vbrenister.wte.pages
 
-import com.raquo.laminar.api.L.{*, given}
+import com.raquo.laminar.api.L.*
+import com.raquo.laminar.api.L.given
 import com.vbrenister.wte.components.Counter
 
 object Home {
+
   def apply(): HtmlElement = {
     val (counter, count) = Counter(0, "Give me food!")
 
@@ -15,4 +17,5 @@ object Home {
       counter
     )
   }
+
 }

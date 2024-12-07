@@ -1,20 +1,21 @@
 package com.vbrenister.wte.http.api
-import sttp.tapir.PublicEndpoint
-import sttp.tapir.ztapir.*
-import zio.*
-import sttp.tapir.server.ServerEndpoint
-import sttp.tapir.server.ziohttp.ZioHttpInterpreter
-import com.vbrenister.wte.services.UserService
-import sttp.tapir.json.zio.*
+
 import com.vbrenister.wte.domain.User
+import com.vbrenister.wte.services.UserService
+import scala.concurrent.Future
+import sttp.tapir.generic.auto.*
+import sttp.tapir.json.zio.*
+import sttp.tapir.server.ziohttp.ZioHttpInterpreter
+import sttp.tapir.server.ServerEndpoint
+import sttp.tapir.swagger.bundle.SwaggerInterpreter
+import sttp.tapir.ztapir.*
+import sttp.tapir.Endpoint
+import sttp.tapir.PublicEndpoint
+import zio.*
+import zio.http.Response
+import zio.http.Routes
 import zio.json.DeriveJsonCodec
 import zio.json.JsonCodec
-import sttp.tapir.generic.auto.*
-import sttp.tapir.swagger.bundle.SwaggerInterpreter
-import scala.concurrent.Future
-import sttp.tapir.Endpoint
-import zio.http.Routes
-import zio.http.Response
 
 object Endpoints extends TapirJsonZio {
 
@@ -31,12 +32,12 @@ object Endpoints extends TapirJsonZio {
 
   val swaggerEndpoints =
     SwaggerInterpreter()
-      .fromEndpoints[Task](List(pingEndpoint), "Our pets", "1.0").map(_.widen[UserService])
+      .fromEndpoints[Task](List(pingEndpoint), "Our pets", "1.0")
+      .map(_.widen[UserService])
 
   val all: List[ZServerEndpoint[UserService, Any]] = List(ping)
 
-  
-  val routes: Routes[UserService, Response] = 
+  val routes: Routes[UserService, Response] =
     ZioHttpInterpreter().toHttp(all ++ swaggerEndpoints)
 
 }

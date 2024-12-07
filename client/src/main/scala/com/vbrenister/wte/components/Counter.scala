@@ -1,8 +1,10 @@
 package com.vbrenister.wte.components
 
-import com.raquo.laminar.api.L.{*, given}
+import com.raquo.laminar.api.L.*
+import com.raquo.laminar.api.L.given
 
 object Counter {
+
   def apply(initial: Int, label: String): (HtmlElement, Signal[Int]) = {
     val count = Var(initial = initial)
 
@@ -11,4 +13,5 @@ object Counter {
 
     (component, count.signal)
   }
+
 }
