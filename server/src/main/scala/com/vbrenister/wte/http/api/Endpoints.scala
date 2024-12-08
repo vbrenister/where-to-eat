@@ -12,6 +12,10 @@ import sttp.tapir.ztapir.*
 import sttp.tapir.Endpoint
 import sttp.tapir.PublicEndpoint
 import zio.*
+import zio.http.Header.AccessControlAllowOrigin
+import zio.http.Middleware
+import zio.http.Middleware.cors
+import zio.http.Middleware.CorsConfig
 import zio.http.Response
 import zio.http.Routes
 import zio.json.DeriveJsonCodec
@@ -20,6 +24,11 @@ import zio.json.JsonCodec
 object Endpoints extends TapirJsonZio {
 
   implicit val userCodec: JsonCodec[User] = DeriveJsonCodec.gen[User]
+
+  val config: CorsConfig =
+    CorsConfig(
+      allowedOrigin = _ => Some(AccessControlAllowOrigin.All)
+    )
 
   val pingEndpoint: Endpoint[Unit, Unit, Unit, List[User], Any] = endpoint.get
     .in("ping")
@@ -38,6 +47,7 @@ object Endpoints extends TapirJsonZio {
   val all: List[ZServerEndpoint[UserService, Any]] = List(ping)
 
   val routes: Routes[UserService, Response] =
-    ZioHttpInterpreter().toHttp(all ++ swaggerEndpoints)
+    ZioHttpInterpreter().toHttp(all ++ swaggerEndpoints) @@ Middleware
+      .requestLogging() @@ cors(config)
 
 }
